@@ -134,6 +134,39 @@ const config: ControlPanelConfig = {
             },
           },
         ],
+        [
+          {
+            name: 'sort_x_axis',
+            config: {
+              type: 'SelectControl',
+              label: t('Sort X Axis'),
+              default: 'none',
+              choices: [
+                ['none', t('None')],
+                ['asc', t('Ascending')],
+                ['desc', t('Descending')],
+              ],
+              renderTrigger: true,
+              description: t('Sort X axis in ascending or descending order'),
+            },
+          },
+        ],
+        [
+          {
+            name: 'orientation',
+            config: {
+              type: 'SelectControl',
+              label: t('Orientation'),
+              default: 'vertical',
+              choices: [
+                ['vertical', t('Vertical')],
+                ['horizontal', t('Horizontal')],
+              ],
+              renderTrigger: true,
+              description: t('Orientation of the chart'),
+            },
+          },
+        ],
         [<ControlSubSectionHeader>{t('Y Axis')}</ControlSubSectionHeader>],
         [
           {
@@ -149,7 +182,7 @@ const config: ControlPanelConfig = {
         ['y_axis_format'],
         ['currency_format'],
       ],
-    },
+    }
   ],
   controlOverrides: {
     groupby: {

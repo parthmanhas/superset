@@ -69,4 +69,6 @@ export interface EchartsWaterfallChartProps extends ChartProps {
 }
 
 export type WaterfallChartTransformedProps =
-  BaseTransformedProps<EchartsWaterfallFormData>;
+  BaseTransformedProps<EchartsWaterfallFormData> 
+  // & { sortXAxis?: 'none' | 'asc' | 'desc' }
+  // & { orientation: 'vertical' | 'horizontal' };

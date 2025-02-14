@@ -19,11 +19,12 @@
 import Echart from '../components/Echart';
 import { WaterfallChartTransformedProps } from './types';
 import { EventHandlers } from '../types';
+import { EChartsCoreOption } from 'echarts/core';
 
 export default function EchartsWaterfall(
   props: WaterfallChartTransformedProps,
 ) {
-  const { height, width, echartOptions, refs, onLegendStateChanged } = props;
+  const { height, width, echartOptions, refs, onLegendStateChanged, formData: { sortXAxis, orientation } } = props;
 
   const eventHandlers: EventHandlers = {
     legendselectchanged: payload => {
@@ -37,12 +38,91 @@ export default function EchartsWaterfall(
     },
   };
 
+  const getSortedOptions = (options: EChartsCoreOption) => {
+    if (sortXAxis === 'none') return options;
+    const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])];
+
+    let sortedData = [...xAxisData];
+
+    sortedData.sort((a, b) => {
+      if (typeof a === 'number' && typeof b === 'number') {
+        return sortXAxis === 'asc' ? a - b : b - a;
+      }
+      const aStr = String(a);
+      const bStr = String(b);
+      return sortXAxis === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
+    });
+
+    const indexMap = new Map(xAxisData.map((val, index) => [val, index]));
+
+    const sortedSeries = ((options.series as any[]) || []).map(series => ({
+      ...series,
+      data: sortedData.map(value => {
+        const index = indexMap.get(value);
+        return index !== undefined ? (series as any).data[index] : null;
+      })
+    }));
+
+    return {
+      ...options,
+      xAxis: {
+        ...(options.xAxis as any),
+        data: sortedData
+      },
+      series: sortedSeries
+    };
+  };
+
+  const getFlippedOptions = (options: EChartsCoreOption) => {
+    if (orientation === 'vertical') return options;
+
+    return {
+      ...options,
+      xAxis: {
+        ...(options.yAxis || {}),
+        type: 'value',
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#666666',
+            width: 1
+          }
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: '#ccc',
+            width: 1,
+            type: 'solid'
+          }
+        }
+      },
+      yAxis: {
+        ...(options.xAxis || {}),
+        type: 'category',
+        axisLine: {
+          show: true
+        }
+      },
+      series: Array.isArray(options.series) ? options.series.map((series: any) => ({
+        ...series,
+        encode: {
+          x: series.encode?.y,
+          y: series.encode?.x,
+        },
+      })) : [],
+    };
+  };
+
+  const sortedEchartOptions = getSortedOptions(echartOptions);
+  const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
+
   return (
     <Echart
       refs={refs}
       height={height}
       width={width}
-      echartOptions={echartOptions}
+      echartOptions={flippedEchartOptions}
       eventHandlers={eventHandlers}
     />
   );
