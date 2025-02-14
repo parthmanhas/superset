@@ -215,22 +215,17 @@ export default function EchartsWaterfall(
     };
   };
 
-
-
   const subtotalOptions = getSubtotalOptions(echartOptions);
   const showTotalOptions = getShowTotalOptions(subtotalOptions);
-  // const sortedEchartOptions = getSortedOptions(filteredOptions);
-  // const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
-
-  console.log('subTotalOptions', subtotalOptions)
-  console.log('showTotalOptions', showTotalOptions)
+  const sortedEchartOptions = getSortedOptions(showTotalOptions);
+  const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
 
   return (
     <Echart
       refs={refs}
       height={height}
       width={width}
-      echartOptions={showTotalOptions}
+      echartOptions={flippedEchartOptions}
       eventHandlers={eventHandlers}
     />
   );
