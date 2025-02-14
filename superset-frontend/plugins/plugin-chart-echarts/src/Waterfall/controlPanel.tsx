@@ -59,6 +59,30 @@ const config: ControlPanelConfig = {
           },
         ],
         [
+          {
+            name: 'show_total',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Show Total'),
+              default: true,
+              renderTrigger: true,
+              description: t('Show the total value in the waterfall chart'),
+            },
+          },
+        ],
+        [
+          {
+            name: 'useFirstValueAsSubtotal',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Use first value as subtotal'),
+              default: false,
+              renderTrigger: true,
+              description: t('Render the first bar in the chart as a subtotal'),
+            },
+          },
+        ],
+        [
           <ControlSubSectionHeader>
             {t('Series colors')}
           </ControlSubSectionHeader>,
@@ -80,6 +104,16 @@ const config: ControlPanelConfig = {
               type: 'ColorPickerControl',
               default: { r: 224, g: 67, b: 85, a: 1 },
               renderTrigger: true,
+            },
+          },
+          {
+            name: 'subtotal_color',
+            config: {
+              type: 'ColorPickerControl',
+              label: t('Subtotal Color'),
+              default: { r: 102, g: 102, b: 102, a: 1 },
+              renderTrigger: true,
+              description: t('Color of the subtotal bars'),
             },
           },
           {

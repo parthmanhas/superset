@@ -24,7 +24,20 @@ import { EChartsCoreOption } from 'echarts/core';
 export default function EchartsWaterfall(
   props: WaterfallChartTransformedProps,
 ) {
-  const { height, width, echartOptions, refs, onLegendStateChanged, formData: { sortXAxis, orientation } } = props;
+  const {
+    height,
+    width,
+    echartOptions,
+    refs,
+    onLegendStateChanged,
+    formData: {
+      sortXAxis,
+      orientation,
+      showTotal,
+      useFirstValueAsSubtotal,
+      subtotalColor
+    }
+  } = props;
 
   const eventHandlers: EventHandlers = {
     legendselectchanged: payload => {
@@ -36,6 +49,94 @@ export default function EchartsWaterfall(
     legendinverseselect: payload => {
       onLegendStateChanged?.(payload.selected);
     },
+  };
+
+  const getSubtotalOptions = (options: EChartsCoreOption) => {
+    if (!useFirstValueAsSubtotal) return options;
+
+    const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])];
+
+    const totalSeries = ((options.series as any[]) || [])
+      .find(arr => arr.name === 'Total');
+
+    const totalsIndices = totalSeries?.data
+      ?.map((point: any, idx: number) => point.value !== '-' ? idx : -1)
+      ?.filter((idx: number) => idx !== -1) || []
+
+    // Create set of indices for first values
+    const subtotalIndices = new Set([
+      0,
+      ...totalsIndices.map(idx => idx + 1)
+    ].filter(idx => idx < xAxisData.length));
+
+    const processedSeries = ((options.series as any[]) || []).map(series => {
+
+      const newData = series.data.map((dataPoint: any, index: number) => {
+        // Skip if not a subtotal index
+        if (!subtotalIndices.has(index)) return dataPoint;
+
+        const isTransparent = dataPoint?.itemStyle?.color &&
+          dataPoint.itemStyle.color === 'transparent';
+
+        if (isTransparent) return dataPoint;
+
+        if (dataPoint.value === '-') return dataPoint;
+
+
+
+        // Return modified data point with subtotal styling
+        const updatedColor = `rgba(${subtotalColor.r}, ${subtotalColor.g}, ${subtotalColor.b}, ${subtotalColor.a})`;
+        return {
+          ...dataPoint,
+          itemStyle: {
+            ...dataPoint.itemStyle,
+            color: updatedColor,
+            borderColor: updatedColor
+          }
+        };
+      });
+
+      return {
+        ...series,
+        data: newData
+      };
+    });
+    return {
+      ...options,
+      xAxis: {
+        ...(options.xAxis as any),
+        data: xAxisData
+      },
+      series: processedSeries
+    };
+  };
+
+  const getShowTotalOptions = (options: EChartsCoreOption) => {
+    if (showTotal) return options;
+
+
+    const totalsIndex = ((options.series as any[]) || [])
+      .find(series => series.name === 'Total')
+      ?.data
+      .map((dataPoint: any, index: number) => dataPoint.value !== '-' ? index : -1)
+      .filter((index: number) => index !== -1) || [];
+
+    const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])].filter((_, index) => !totalsIndex.includes(index));
+
+    // remove element at totalsIndex from each series.data
+    const filteredSeries = ((options.series as any[]) || []).map(series => ({
+      ...series,
+      data: series.data.filter((_, index: number) => !totalsIndex.includes(index))
+    }));
+
+    return {
+      ...options,
+      xAxis: {
+        ...(options.xAxis as any),
+        data: xAxisData
+      },
+      series: filteredSeries
+    };
   };
 
   const getSortedOptions = (options: EChartsCoreOption) => {
@@ -114,15 +215,22 @@ export default function EchartsWaterfall(
     };
   };
 
-  const sortedEchartOptions = getSortedOptions(echartOptions);
-  const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
+
+
+  const subtotalOptions = getSubtotalOptions(echartOptions);
+  const showTotalOptions = getShowTotalOptions(subtotalOptions);
+  // const sortedEchartOptions = getSortedOptions(filteredOptions);
+  // const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
+
+  console.log('subTotalOptions', subtotalOptions)
+  console.log('showTotalOptions', showTotalOptions)
 
   return (
     <Echart
       refs={refs}
       height={height}
       width={width}
-      echartOptions={flippedEchartOptions}
+      echartOptions={showTotalOptions}
       eventHandlers={eventHandlers}
     />
   );
