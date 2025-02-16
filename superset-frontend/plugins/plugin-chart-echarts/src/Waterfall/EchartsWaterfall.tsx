@@ -66,7 +66,7 @@ export default function EchartsWaterfall(
     // Create set of indices for first values
     const subtotalIndices = new Set([
       0,
-      ...totalsIndices.map(idx => idx + 1)
+      ...totalsIndices.map((idx: number) => idx + 1)
     ].filter(idx => idx < xAxisData.length));
 
     const processedSeries = ((options.series as any[]) || []).map(series => {
@@ -126,7 +126,7 @@ export default function EchartsWaterfall(
     // remove element at totalsIndex from each series.data
     const filteredSeries = ((options.series as any[]) || []).map(series => ({
       ...series,
-      data: series.data.filter((_, index: number) => !totalsIndex.includes(index))
+      data: series.data.filter((_: any, index: number) => !totalsIndex.includes(index))
     }));
 
     return {
