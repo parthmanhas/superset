@@ -188,7 +188,8 @@ export default function EchartsWaterfall(
         type: 'category',
         axisLine: {
           show: true
-        }
+        },
+        data: [...(options.xAxis as any).data].reverse()
       },
       series: Array.isArray(options.series) ? options.series.map((series: any) => ({
         ...series,
@@ -196,6 +197,7 @@ export default function EchartsWaterfall(
           x: series.encode?.y,
           y: series.encode?.x,
         },
+        data: [...series.data].reverse(),
       })) : [],
     };
   };
