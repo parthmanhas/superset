@@ -56,24 +56,10 @@ export default function EchartsWaterfall(
 
     const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])];
 
-    const totalSeries = ((options.series as any[]) || [])
-      .find(arr => arr.name === 'Total');
-
-    const totalsIndices = totalSeries?.data
-      ?.map((point: any, idx: number) => point.value !== '-' ? idx : -1)
-      ?.filter((idx: number) => idx !== -1) || []
-
-    // Create set of indices for first values
-    const subtotalIndices = new Set([
-      0,
-      ...totalsIndices.map((idx: number) => idx + 1)
-    ].filter(idx => idx < xAxisData.length));
-
     const processedSeries = ((options.series as any[]) || []).map(series => {
-
       const newData = series.data.map((dataPoint: any, index: number) => {
-        // Skip if not a subtotal index
-        if (!subtotalIndices.has(index)) return dataPoint;
+
+        if (index !== 0) return dataPoint;
 
         const isTransparent = dataPoint?.itemStyle?.color &&
           dataPoint.itemStyle.color === 'transparent';
@@ -81,8 +67,6 @@ export default function EchartsWaterfall(
         if (isTransparent) return dataPoint;
 
         if (dataPoint.value === '-') return dataPoint;
-
-
 
         // Return modified data point with subtotal styling
         const updatedColor = `rgba(${subtotalColor.r}, ${subtotalColor.g}, ${subtotalColor.b}, ${subtotalColor.a})`;
@@ -101,6 +85,7 @@ export default function EchartsWaterfall(
         data: newData
       };
     });
+
     return {
       ...options,
       xAxis: {
