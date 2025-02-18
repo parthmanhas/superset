@@ -60,6 +60,8 @@ export type EchartsWaterfallFormData = QueryFormData &
     xTicksLayout?: WaterfallFormXTicksLayout;
     yAxisLabel: string;
     yAxisFormat: string;
+    seriesOrderByColumn: string;
+    seriesOrderDirection: 'ASC' | 'DESC';
   };
 
 export const DEFAULT_FORM_DATA: Partial<EchartsWaterfallFormData> = {
@@ -72,6 +74,6 @@ export interface EchartsWaterfallChartProps extends ChartProps {
 }
 
 export type WaterfallChartTransformedProps =
-  BaseTransformedProps<EchartsWaterfallFormData> 
-  // & { sortXAxis?: 'none' | 'asc' | 'desc' }
-  // & { orientation: 'vertical' | 'horizontal' };
+  BaseTransformedProps<EchartsWaterfallFormData>
+// & { sortXAxis?: 'none' | 'asc' | 'desc' }
+// & { orientation: 'vertical' | 'horizontal' };

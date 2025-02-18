@@ -39,6 +39,42 @@ const config: ControlPanelConfig = {
         ['metric'],
         ['adhoc_filters'],
         ['row_limit'],
+        [
+          {
+            name: 'seriesOrderByColumn',
+            config: {
+              type: 'SelectControl',
+              label: t('Order Series By Column'),
+              description: t('Column to use for ordering the waterfall series with columns not in the chart'),
+              mapStateToProps: (state) => ({
+                choices: [
+                  [null, t('None')],
+                  ...(state.datasource?.columns || []).map(col => [col.column_name, col.column_name]),
+                ]
+              }),
+              default: null,
+              renderTrigger: true,
+            },
+          },
+        ],
+        [
+          {
+            name: 'seriesOrderDirection',
+            config: {
+              type: 'SelectControl',
+              label: t('Order Direction'),
+              choices: [
+                [null, t('None')],
+                ['ASC', t('Ascending')],
+                ['DESC', t('Descending')],
+              ],
+              default: null,
+              renderTrigger: true,
+              description: t('Ordering direction for the series, to be used with "Order Series By Column"'),
+            },
+          },
+        ]
+
       ],
     },
     {
