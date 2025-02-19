@@ -35,7 +35,7 @@ export default function EchartsWaterfall(
       orientation,
       showTotal,
       useFirstValueAsSubtotal,
-      subtotalColor
+      totalColor
     }
   } = props;
 
@@ -68,8 +68,7 @@ export default function EchartsWaterfall(
 
         if (dataPoint.value === '-') return dataPoint;
 
-        // Return modified data point with subtotal styling
-        const updatedColor = `rgba(${subtotalColor.r}, ${subtotalColor.g}, ${subtotalColor.b}, ${subtotalColor.a})`;
+        const updatedColor = `rgba(${totalColor.r}, ${totalColor.g}, ${totalColor.b}, ${totalColor.a})`;
         return {
           ...dataPoint,
           itemStyle: {
@@ -108,7 +107,6 @@ export default function EchartsWaterfall(
 
     const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])].filter((_, index) => !totalsIndex.includes(index));
 
-    // remove element at totalsIndex from each series.data
     const filteredSeries = ((options.series as any[]) || []).map(series => ({
       ...series,
       data: series.data.filter((_: any, index: number) => !totalsIndex.includes(index))

@@ -143,16 +143,6 @@ const config: ControlPanelConfig = {
             },
           },
           {
-            name: 'subtotal_color',
-            config: {
-              type: 'ColorPickerControl',
-              label: t('Subtotal'),
-              default: { r: 102, g: 102, b: 102, a: 1 },
-              renderTrigger: true,
-              description: t('Color of the subtotal bars'),
-            },
-          },
-          {
             name: 'total_color',
             config: {
               label: t('Total'),
