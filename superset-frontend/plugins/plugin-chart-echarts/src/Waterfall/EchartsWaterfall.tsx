@@ -20,7 +20,6 @@ import Echart from '../components/Echart';
 import { WaterfallChartTransformedProps } from './types';
 import { EventHandlers } from '../types';
 import { EChartsCoreOption } from 'echarts/core';
-import { format } from 'd3-format';
 
 export default function EchartsWaterfall(
   props: WaterfallChartTransformedProps,
@@ -168,7 +167,7 @@ export default function EchartsWaterfall(
     return {
       ...options,
       xAxis: {
-        ...(options.yAxis || {}),
+        ...((options.yAxis as any) || {}),
         type: 'value',
         axisLine: {
           show: true,
@@ -185,15 +184,15 @@ export default function EchartsWaterfall(
             type: 'solid'
           }
         },
-        name: (options.yAxis)?.name || '',
+        name: (options.yAxis as any)?.name || '',
         nameLocation: 'middle',
       },
       yAxis: {
-        ...(options.xAxis || {}),
+        ...((options.xAxis as any) || {}),
         type: 'category',
         axisLine: { show: true },
         data: [...(options.xAxis as any).data].reverse(),
-        name: options.xAxis?.name || '',
+        name: (options.xAxis as any)?.name || '',
         nameLocation: 'middle',
       },
       series: Array.isArray(options.series) ? options.series.map((series: any) => ({
@@ -217,10 +216,10 @@ export default function EchartsWaterfall(
     if (orientation === 'vertical') return {
       ...options,
       xAxis: {
-        ...(options.xAxis || {}),
+        ...((options.xAxis as any) || {}),
         axisLabel: {
-          ...(options.xAxis.axisLabel || {}),
-          formatter: function (value, index) {
+          ...((options.xAxis as any).axisLabel || {}),
+          formatter: function (value: string, index: number) {
             if (index === 0) return `{subtotal|${value}}`;
             return value;
           },
@@ -236,11 +235,11 @@ export default function EchartsWaterfall(
     return {
       ...options,
       yAxis: {
-        ...(options.yAxis || {}),
+        ...((options.yAxis as any) || {}),
         axisLabel: {
-          ...(options.yAxis.axisLabel || {}),
-          formatter: function (value, index) {
-            if (index === options.yAxis.data.length - 1) return `{subtotal|${value}}`;
+          ...((options.yAxis as any).axisLabel || {}),
+          formatter: function (value: string, index: number) {
+            if (index === (options.yAxis as any).data.length - 1) return `{subtotal|${value}}`;
             return value;
           },
           rich: {
@@ -265,16 +264,16 @@ export default function EchartsWaterfall(
     if (orientation === 'vertical') return {
       ...options,
       xAxis: {
-        ...options.xAxis,
+        ...(options.xAxis as any),
         axisLabel: {
-          ...options.xAxis.axisLabel,
-          formatter: function (value, index) {
+          ...(options.xAxis as any).axisLabel,
+          formatter: function (value: string, index: number) {
             if (index === 0 && useFirstValueAsSubtotal) return `{subtotal|${value}}`;
             else if (totalsIndex.includes(index)) return `{total|${value}}`;
             return value;
           },
           rich: {
-            ...options.xAxis.axisLabel.rich,
+            ...(options.xAxis as any).axisLabel.rich,
             total: {
               fontWeight: 'bold'
             }
@@ -286,16 +285,16 @@ export default function EchartsWaterfall(
     return {
       ...options,
       yAxis: {
-        ...options.yAxis,
+        ...(options.yAxis as any),
         axisLabel: {
-          ...options.yAxis.axisLabel,
-          formatter: function (value, index) {
-            if (index === options.yAxis.data.length - 1 && useFirstValueAsSubtotal) return `{subtotal|${value}}`;
+          ...(options.yAxis as any).axisLabel,
+          formatter: function (value: string, index: number) {
+            if (index === (options.yAxis as any).data.length - 1 && useFirstValueAsSubtotal) return `{subtotal|${value}}`;
             else if (totalsIndex.includes(index)) return `{total|${value}}`;
             return value;
           },
           rich: {
-            ...(options.yAxis.axisLabel.rich || {}),
+            ...((options.yAxis as any).axisLabel.rich || {}),
             total: {
               fontWeight: 'bold'
             }
