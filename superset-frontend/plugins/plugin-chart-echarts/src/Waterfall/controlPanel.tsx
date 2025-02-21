@@ -108,6 +108,18 @@ const config: ControlPanelConfig = {
         ],
         [
           {
+            name: 'bold_total',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Bold Total'),
+              default: true,
+              renderTrigger: true,
+              description: t('Bold the total axis label in the waterfall chart'),
+            },
+          },
+        ],
+        [
+          {
             name: 'useFirstValueAsSubtotal',
             config: {
               type: 'CheckboxControl',
@@ -115,6 +127,18 @@ const config: ControlPanelConfig = {
               default: false,
               renderTrigger: true,
               description: t('Render the first bar in the chart as a subtotal'),
+            },
+          },
+        ],
+        [
+          {
+            name: 'bold_sub_total',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Bold first value as subtotal'),
+              default: true,
+              renderTrigger: true,
+              description: t('Bold the first bar axis label in the waterfall chart'),
             },
           },
         ],

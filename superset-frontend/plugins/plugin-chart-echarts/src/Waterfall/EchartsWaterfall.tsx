@@ -20,6 +20,7 @@ import Echart from '../components/Echart';
 import { WaterfallChartTransformedProps } from './types';
 import { EventHandlers } from '../types';
 import { EChartsCoreOption } from 'echarts/core';
+import { format } from 'd3-format';
 
 export default function EchartsWaterfall(
   props: WaterfallChartTransformedProps,
@@ -37,7 +38,9 @@ export default function EchartsWaterfall(
       useFirstValueAsSubtotal,
       totalColor,
       xAxisLabelDistance,
-      yAxisLabelDistance
+      yAxisLabelDistance,
+      boldTotal,
+      boldSubTotal
     }
   } = props;
 
@@ -76,7 +79,7 @@ export default function EchartsWaterfall(
           itemStyle: {
             ...dataPoint.itemStyle,
             color: updatedColor,
-            borderColor: updatedColor
+            borderColor: updatedColor,
           }
         };
       });
@@ -100,14 +103,14 @@ export default function EchartsWaterfall(
   const getShowTotalOptions = (options: EChartsCoreOption) => {
     if (showTotal) return options;
 
-
     const totalsIndex = ((options.series as any[]) || [])
       .find(series => series.name === 'Total')
       ?.data
       .map((dataPoint: any, index: number) => dataPoint.value !== '-' ? index : -1)
       .filter((index: number) => index !== -1) || [];
 
-    const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])].filter((_, index) => !totalsIndex.includes(index));
+    const xAxisData = [...((options.xAxis as { data: (string | number)[] }).data || [])]
+      .filter((_, index) => !totalsIndex.includes(index));
 
     const filteredSeries = ((options.series as any[]) || []).map(series => ({
       ...series,
@@ -183,7 +186,7 @@ export default function EchartsWaterfall(
           }
         },
         name: (options.yAxis)?.name || '',
-        nameLocation: 'middle'
+        nameLocation: 'middle',
       },
       yAxis: {
         ...(options.xAxis || {}),
@@ -207,6 +210,100 @@ export default function EchartsWaterfall(
       })) : [],
     };
   };
+
+  const getSubTotalBoldOptions = (options: EChartsCoreOption) => {
+    if (!boldSubTotal) return options
+
+    if (orientation === 'vertical') return {
+      ...options,
+      xAxis: {
+        ...(options.xAxis || {}),
+        axisLabel: {
+          ...(options.xAxis.axisLabel || {}),
+          formatter: function (value, index) {
+            if (index === 0) return `{subtotal|${value}}`;
+            return value;
+          },
+          rich: {
+            subtotal: {
+              fontWeight: 'bold'
+            }
+          },
+        }
+      }
+    };
+
+    return {
+      ...options,
+      yAxis: {
+        ...(options.yAxis || {}),
+        axisLabel: {
+          ...(options.yAxis.axisLabel || {}),
+          formatter: function (value, index) {
+            if (index === options.yAxis.data.length - 1) return `{subtotal|${value}}`;
+            return value;
+          },
+          rich: {
+            subtotal: {
+              fontWeight: 'bold'
+            }
+          },
+        }
+      }
+    }
+  }
+
+  const getBoldTotalOptions = (options: EChartsCoreOption) => {
+    if (!boldTotal) return options;
+
+    const totalsIndex = ((options.series as any[]) || [])
+      .find(series => series.name === 'Total')
+      ?.data
+      .map((dataPoint: any, index: number) => dataPoint.value !== '-' ? index : -1)
+      .filter((index: number) => index !== -1) || [];
+
+    if (orientation === 'vertical') return {
+      ...options,
+      xAxis: {
+        ...options.xAxis,
+        axisLabel: {
+          ...options.xAxis.axisLabel,
+          formatter: function (value, index) {
+            if (index === 0 && useFirstValueAsSubtotal) return `{subtotal|${value}}`;
+            else if (totalsIndex.includes(index)) return `{total|${value}}`;
+            return value;
+          },
+          rich: {
+            ...options.xAxis.axisLabel.rich,
+            total: {
+              fontWeight: 'bold'
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      ...options,
+      yAxis: {
+        ...options.yAxis,
+        axisLabel: {
+          ...options.yAxis.axisLabel,
+          formatter: function (value, index) {
+            if (index === options.yAxis.data.length - 1 && useFirstValueAsSubtotal) return `{subtotal|${value}}`;
+            else if (totalsIndex.includes(index)) return `{total|${value}}`;
+            return value;
+          },
+          rich: {
+            ...(options.yAxis.axisLabel.rich || {}),
+            total: {
+              fontWeight: 'bold'
+            }
+          }
+        }
+      }
+    }
+  }
 
   const getLabelDistanceOptions = (options: EChartsCoreOption) => {
 
@@ -238,7 +335,9 @@ export default function EchartsWaterfall(
   const showTotalOptions = getShowTotalOptions(subtotalOptions);
   const sortedEchartOptions = getSortedOptions(showTotalOptions);
   const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
-  const labelDistanceOptions = getLabelDistanceOptions(flippedEchartOptions);
+  const boldSubTotalOptions = getSubTotalBoldOptions(flippedEchartOptions);
+  const boldTotalOptions = getBoldTotalOptions(boldSubTotalOptions);
+  const labelDistanceOptions = getLabelDistanceOptions(boldTotalOptions);
 
   return (
     <Echart

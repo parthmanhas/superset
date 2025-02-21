@@ -51,6 +51,8 @@ export type EchartsWaterfallFormData = QueryFormData &
     decreaseColor: RgbaColor;
     orientation: 'vertical' | 'horizontal';
     showTotal: boolean;
+    boldTotal: boolean;
+    boldSubTotal: boolean;
     totalColor: RgbaColor;
     metric: QueryFormMetric;
     xAxis: QueryFormColumn;
