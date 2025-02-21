@@ -160,7 +160,6 @@ export default function EchartsWaterfall(
   };
 
   const getFlippedOptions = (options: EChartsCoreOption) => {
-
     if (orientation === 'vertical') return options;
 
     return {
@@ -183,21 +182,16 @@ export default function EchartsWaterfall(
             type: 'solid'
           }
         },
-        // Swap axis labels
         name: (options.yAxis)?.name || '',
         nameLocation: 'middle'
       },
       yAxis: {
         ...(options.xAxis || {}),
         type: 'category',
-        axisLine: {
-          show: true
-        },
+        axisLine: { show: true },
         data: [...(options.xAxis as any).data].reverse(),
-        // Swap axis labels
         name: options.xAxis?.name || '',
         nameLocation: 'middle',
-
       },
       series: Array.isArray(options.series) ? options.series.map((series: any) => ({
         ...series,
@@ -206,6 +200,10 @@ export default function EchartsWaterfall(
           y: series.encode?.x,
         },
         data: [...series.data].reverse(),
+        label: {
+          ...(series.label || {}),
+          position: series.name === 'Decrease' ? 'left' : 'right'
+        }
       })) : [],
     };
   };
