@@ -166,6 +166,20 @@ const config: ControlPanelConfig = {
         ],
         [
           {
+            name: 'x_axis_label_distance',
+            config: {
+              type: 'TextControl',
+              label: t('X Axis Label Distance'),
+              description: t('Distance of the label from X axis (in pixels)'),
+              renderTrigger: true,
+              default: '25',
+              isInt: true,
+              // validators: [v => !Number.isNaN(v) && v >= 0],
+            },
+          },
+        ],
+        [
+          {
             name: 'x_axis_time_format',
             config: {
               ...sharedControls.x_axis_time_format,
@@ -236,6 +250,20 @@ const config: ControlPanelConfig = {
               label: t('Y Axis Label'),
               renderTrigger: true,
               default: '',
+            },
+          },
+        ],
+        [
+          {
+            name: 'y_axis_label_distance',
+            config: {
+              type: 'TextControl',
+              label: t('Y Axis Label Distance'),
+              description: t('Distance of the label from Y axis (in pixels)'),
+              renderTrigger: true,
+              default: '25',
+              isInt: true,
+              // validators: [v => !Number.isNaN(v) && v >= 0],
             },
           },
         ],

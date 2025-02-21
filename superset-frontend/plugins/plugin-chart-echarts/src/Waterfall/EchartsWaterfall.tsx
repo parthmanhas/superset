@@ -35,7 +35,9 @@ export default function EchartsWaterfall(
       orientation,
       showTotal,
       useFirstValueAsSubtotal,
-      totalColor
+      totalColor,
+      xAxisLabelDistance,
+      yAxisLabelDistance
     }
   } = props;
 
@@ -158,6 +160,7 @@ export default function EchartsWaterfall(
   };
 
   const getFlippedOptions = (options: EChartsCoreOption) => {
+
     if (orientation === 'vertical') return options;
 
     return {
@@ -179,7 +182,10 @@ export default function EchartsWaterfall(
             width: 1,
             type: 'solid'
           }
-        }
+        },
+        // Swap axis labels
+        name: (options.yAxis)?.name || '',
+        nameLocation: 'middle'
       },
       yAxis: {
         ...(options.xAxis || {}),
@@ -187,7 +193,11 @@ export default function EchartsWaterfall(
         axisLine: {
           show: true
         },
-        data: [...(options.xAxis as any).data].reverse()
+        data: [...(options.xAxis as any).data].reverse(),
+        // Swap axis labels
+        name: options.xAxis?.name || '',
+        nameLocation: 'middle',
+
       },
       series: Array.isArray(options.series) ? options.series.map((series: any) => ({
         ...series,
@@ -200,17 +210,44 @@ export default function EchartsWaterfall(
     };
   };
 
+  const getLabelDistanceOptions = (options: EChartsCoreOption) => {
+
+    if (isNaN(Number(xAxisLabelDistance))) {
+      console.error('xAxisLabelDistance should be a number');
+      return options;
+    }
+
+    if (isNaN(Number(yAxisLabelDistance))) {
+      console.error('yAxisLabelDistance should be a number');
+      return options;
+    }
+
+    return {
+      ...options,
+      xAxis: {
+        ...(options.xAxis as any),
+        nameGap: Number(xAxisLabelDistance)
+      },
+      yAxis: {
+        ...(options.yAxis as any),
+        nameGap: Number(yAxisLabelDistance)
+      }
+    };
+  }
+
+
   const subtotalOptions = getSubtotalOptions(echartOptions);
   const showTotalOptions = getShowTotalOptions(subtotalOptions);
   const sortedEchartOptions = getSortedOptions(showTotalOptions);
   const flippedEchartOptions = getFlippedOptions(sortedEchartOptions);
+  const labelDistanceOptions = getLabelDistanceOptions(flippedEchartOptions);
 
   return (
     <Echart
       refs={refs}
       height={height}
       width={width}
-      echartOptions={flippedEchartOptions}
+      echartOptions={labelDistanceOptions}
       eventHandlers={eventHandlers}
     />
   );

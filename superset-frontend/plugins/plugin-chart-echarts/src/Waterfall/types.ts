@@ -55,9 +55,11 @@ export type EchartsWaterfallFormData = QueryFormData &
     metric: QueryFormMetric;
     xAxis: QueryFormColumn;
     xAxisLabel: string;
+    xAxisLabelDistance: string;
     xAxisTimeFormat?: string;
     xTicksLayout?: WaterfallFormXTicksLayout;
     yAxisLabel: string;
+    yAxisLabelDistance: string;
     yAxisFormat: string;
     seriesOrderByColumn: string;
     seriesOrderDirection: 'ASC' | 'DESC';
